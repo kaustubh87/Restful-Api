@@ -19,6 +19,7 @@ app.use((res, req, next) => {
         res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
         return res.statusCode(200).json({});
     }
+    next();
 });
 
 app.use('/products', productRoutes);
