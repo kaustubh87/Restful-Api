@@ -10,6 +10,17 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+/** fix Cross origin errors CORS */
+
+app.use((res, req, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    if(req.method === 'OPTIONS'){
+        res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+        return res.statusCode(200).json({});
+    }
+});
+
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
 
