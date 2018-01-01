@@ -25,9 +25,6 @@ router.post('/', (req,res,next) => {
     })
     .catch(err => {
         console.log(err);
-        res.statusCode(500).json({
-            error: err
-        });
     });
 });
 
@@ -40,7 +37,7 @@ router.get('/:productId', (req,res,next) => {
 ;    })
      .catch( err => {
          console.log(err);
-         res.statusCode(500).json({ error: err});
+         res.status(500).json({ error: err});
      });
  
 
