@@ -21,10 +21,14 @@ router.post('/', (req,res,next) => {
         res.status(201).json({
             message: 'Handling POST requests to /products',
             createdProduct: result
-           
         });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+        console.log(err);
+        res.statusCode(500).json({
+            error: err
+        });
+    });
 });
 
 router.get('/:productId', (req,res,next) => {
