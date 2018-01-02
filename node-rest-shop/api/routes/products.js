@@ -9,8 +9,15 @@ router.get('/', (req,res,next) => {
     .exec()
     .then(docs => {
         console.log(docs);
+        if(docs.length>=0){
         res.status(200).json(docs);
-    })
+        } else {
+            res.status(404).json({
+                message: 'No entries found'
+            });
+        }
+        
+    });
 });
 
 router.post('/', (req,res,next) => {
@@ -46,9 +53,26 @@ router.get('/:productId', (req,res,next) => {
 
 router.patch('/:productId', (req,res,next) => {
     
-        res.status(200).json({
-            message: 'Updated product!'
+    const id = req.params.productId;
+   
+    Product.update({
+        _id: id
+    }, {
+        $set: {
+            name: req.body.name,
+            price: req.body.price
+        }
+    }).exec()
+    .then( result => {
+        console.log(result);
+        res.status(200).json(result);
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+            err: err
         })
+    });
 
 });
 
