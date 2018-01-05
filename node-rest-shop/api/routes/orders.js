@@ -38,6 +38,11 @@ router.post('/', (req,res,next) => {
    
     Product.findById(req.body.productId)
     .then(product => {
+        if(!product){
+            res.status(404).json({
+                message: 'Product not found'
+            })
+        }
         const order = new Order ({
             _id: mongoose.Types.ObjectId(),
             quantity: req.body.quantity,
@@ -71,17 +76,47 @@ router.post('/', (req,res,next) => {
 
 
 router.get('/:orderId', (req,res,next)=>{
-    res.status(200).json({
-        message: 'Order details',
-        orderId: req.params.orderId
-    });
+    const orderId = req.params.orderId;
+   Order.findById(orderId)
+   .exec()
+   .then(order => {
+       if(!order) {
+           res.status(404).json({
+               message: 'Order not found'
+           });
+       }
+       res.status(200).json({
+           order: order,
+           request: {
+               type: 'GET',
+               url: 'http://localhost:4312/orders'
+           }
+       });
+   })
+   .catch( err =>{
+       res.status(500).json({
+           error : err
+       })
+   });
 });
 
 router.delete('/:orderId', (req,res,next)=> {
-    res.status(200).json({
-        message: 'Order deleted',
-        orderId: req.params.orderId
-    });
+    const orderId = req.params.orderId;
+    Order.remove({
+        _id: orderId
+    }).exec()
+    .then(data => {
+        res.status(200).json({
+            message: 'Order was deleted successfully',
+            request: {
+                type: 'GET',
+                url: 'http://localhost:4312/orders'
+            }
+        })   
+    })
+    .catch(err => {
+        error: err
+    })
 });
 
 
