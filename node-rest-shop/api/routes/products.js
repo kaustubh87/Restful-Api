@@ -13,24 +13,29 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = function(req, file, callback){
-    //Reject a file
-    callback(null, false);
-
-    callback(null, true); // will store the file
+ 
+    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
+        callback(null, true); // will store the file
+    }
+    else{
+           //Reject a file
+         callback(null, false);
+    }
 };
 
 const upload = multer({ 
         storage: storage,
         limits: {
             fileSize : 1024 * 1024 * 5  // Can accept files only upto 5mb
-        }
+        },
+        fileFilter: fileFilter
     });
 
 const Product = require('../models/product');
 
 router.get('/', (req,res,next) => {
     Product.find()
-    .select('name price _id')
+    .select('name price _id productImage')
     .exec()
     .then(docs => {
         const response = {
@@ -39,6 +44,7 @@ router.get('/', (req,res,next) => {
                 return {
                     name: doc.name,
                     price: doc.price,
+                    productImage: doc.productImage,
                     _id: doc._id,
                     request: {
                         type: 'GET',
@@ -66,7 +72,8 @@ router.post('/', upload.single('productImage') ,(req,res,next) => {
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
-        price: req.body.price
+        price: req.body.price,
+        productImage: req.file.path
     });
     product.save().then(result => {
         console.log(result);
@@ -89,7 +96,7 @@ router.post('/', upload.single('productImage') ,(req,res,next) => {
 router.get('/:productId', (req,res,next) => {
 
     const pId = req.params.productId;
-    Product.findById(pId).select('name price _id').exec().then(doc => {
+    Product.findById(pId).select('name price _id productImage').exec().then(doc => {
         //console.log(doc);
         res.status(200).json({
             product :doc,
