@@ -7,8 +7,18 @@ const User = require('../models/user');
 
 router.post('/signup', (req,res,next) => {
 
-    bcrypt.hash(req.body.password, 10, (err, hash) => {
-        
+    User.findById({email: req.body.email}).exec().then(user => {
+        if (user){
+            return res.status(409).json({
+                message: 'Email address exists'
+            });
+        }
+        else {
+            
+        }
+    })
+
+    bcrypt.hash(req.body.password, 10, (err, hash) => {   
         if(err){
             res.status(500).json({
                 error: err
