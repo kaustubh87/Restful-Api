@@ -68,7 +68,7 @@ router.get('/', (req,res,next) => {
 
 // upload.single uploads only one file
 
-router.post('/', upload.single('productImage'), checkAuth, (req,res,next) => {
+router.post('/', checkAuth, upload.single('productImage'), (req,res,next) => {
     //console.log(req.file);
     const product = new Product({
         _id: new mongoose.Types.ObjectId(),
@@ -77,7 +77,7 @@ router.post('/', upload.single('productImage'), checkAuth, (req,res,next) => {
         productImage: req.file.path
     });
     product.save().then(result => {
-        console.log(result);
+        //console.log(result);
         res.status(201).json({
             message: 'Created product successfully',
             createdProduct: {
@@ -100,16 +100,19 @@ router.get('/:productId', (req,res,next) => {
     Product.findById(pId).select('name price _id productImage').exec().then(doc => {
         //console.log(doc);
         res.status(200).json({
-            product :doc,
+            product : doc,
             request : {
                 type: 'GET',
                 url: 'http://localhost:4312/products'
             }
         });
     })
-     .catch( err => {
+     .catch(err => {
          console.log(err);
-         res.status(500).json({ error: err});
+         res.status(500).json(
+             { 
+                 error: err
+            });
      });
  
 
@@ -141,7 +144,7 @@ router.patch('/:productId', (req,res,next) => {
         console.log(err);
         res.status(500).json({
             err: err
-        })
+        });
     });
 
 });
