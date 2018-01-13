@@ -6,35 +6,9 @@ const checkAuth = require('../middleware/check-auth');
 const Order = require('../models/order');
 const Product = require('../models/product');
 
-router.get('/', checkAuth, (req,res,next)=>{
-    Order
-    .find()
-    .select('product quantity _id')
-    .populate('product', 'name price') //Populate products
-    .exec()
-    .then(docs => {
-        res.status(200).json({
-            count: docs.length,
-            orders: docs.map(doc=>{
-                return {
-                    _id: doc._id,
-                    product: doc.product,
-                    quantity: doc.quantity,
-                    request: {
-                        type: 'GET',
-                        url: 'http://localhost:3000/orders/' +doc._id
-                    }
-                }
-            }),
-        });
-    })
-    .catch(err=> {
-        console.log(err);
-        res.status(500).json({
-            error: err
-        });
-    });
-});
+const OrdersController = require('../controllers/orders');
+
+router.get('/', checkAuth, OrdersController.orders_get_all);
 
 router.post('/', checkAuth, (req,res,next) => {
    
