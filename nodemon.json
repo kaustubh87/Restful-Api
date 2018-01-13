@@ -1,5 +1,6 @@
 {
     "env": {
-        "MONGO_ATLAS_PW": "Drupal@12345"
+        "MONGO_ATLAS_PW": "nodeshop"
+        
     }
 }
