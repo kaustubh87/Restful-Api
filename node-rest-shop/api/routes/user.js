@@ -64,7 +64,6 @@ router.post('/login', (req, res, next) => {
             }
             if(result) {
                 //User has logged in so generate a token for him
-
                const token =  jwt.sign({
                     email: user[0].email,
                     userId: user[0]._id
