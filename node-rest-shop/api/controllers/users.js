@@ -41,3 +41,49 @@ exports.users_get_all_users = (req,res,next) => {
     });
    
 };
+
+exports.user_get_login = (req, res, next) => {
+    User.find({
+        email: req.body.email
+    })
+    .exec()
+    .then(user => {
+        if(user.length <1) {
+            return res.status(401).json({
+                message: 'Authorization failed'
+            });
+        }
+        bcrypt.compare(req.body.password, user[0].password, (err, result) =>{
+            if(err){
+                return res.status(401).json({
+                    message: 'Authorization failed'
+                });
+            }
+            if(result) {
+                //User has logged in so generate a token for him
+               const token =  jwt.sign({
+                    email: user[0].email,
+                    userId: user[0]._id
+                }, 
+                "secret", 
+                {
+                    expiresIn: "1h"
+                }
+            );
+                return res.status(200).json({
+                    message: 'Auth Successful',
+                    token: token
+                });
+            }
+            return res.status(401).json({
+                message: 'Authorization failed'
+            });
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.statusCode(500).json({
+            error: err
+        })
+    })
+};
